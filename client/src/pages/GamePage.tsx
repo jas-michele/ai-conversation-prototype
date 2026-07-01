@@ -8,6 +8,8 @@ function GamePage() {
     const [error, setError] = useState("");
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
     const [result, setResult] = useState("");
+    const [currentQuestion, setCurrentQuestion] = useState(0);
+    const [score, setScore] = useState(0);
 
     const handleStartGame = async () => {
         try {
@@ -38,20 +40,38 @@ function GamePage() {
         );
     }
 
-    const question = game.questions[game.currentQuestion];
+    if (currentQuestion >= game.questions.length) {
+        return (
+            <div>
+                <h1>Game Over!</h1>
+                <h2>Final Score: {score}</h2>
+            </div>
+        )
+    }
+
+    const question = game.questions[currentQuestion];
 
     const handleSubmitAnswer = () => {
         if (!selectedAnswer) return;
 
         if (selectedAnswer === question.correctAnswer) {
+            setScore((prev) => prev + 1);
             setResult("✅ Correct");
         } else {
             setResult("❌ Incorrect");
         }
     }
 
+    const handleNextQuestion = () => {
+        setCurrentQuestion((prev) => prev + 1);
+        setSelectedAnswer(null);
+        setResult("");
+    }
+
     return (
         <div>
+            <h3>Score: {score}</h3>
+
             <h2> Question {game.currentQuestion + 1}</h2>
 
             <p>{question.question}</p>
@@ -71,11 +91,22 @@ function GamePage() {
 
            <p>Selected Answer: {selectedAnswer}</p>
 
-           <button onClick={handleSubmitAnswer}>
+           <button 
+              onClick={handleSubmitAnswer}
+              disabled={!selectedAnswer || !!result}
+           >
                 Submit Answer
            </button>
 
-           {result && <h3>{result}</h3>}
+           {result && ( 
+            <>
+            <h3>{result}</h3>
+
+            <button onClick={handleNextQuestion}>
+                Next Question
+            </button>
+            </>
+           )}
         </div>
     );
 }
