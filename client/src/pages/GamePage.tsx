@@ -6,6 +6,8 @@ function GamePage() {
     const [game, setGame] = useState<GameSession | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+    const [result, setResult] = useState("");
 
     const handleStartGame = async () => {
         try {
@@ -38,16 +40,42 @@ function GamePage() {
 
     const question = game.questions[game.currentQuestion];
 
+    const handleSubmitAnswer = () => {
+        if (!selectedAnswer) return;
+
+        if (selectedAnswer === question.correctAnswer) {
+            setResult("✅ Correct");
+        } else {
+            setResult("❌ Incorrect");
+        }
+    }
+
     return (
         <div>
             <h2> Question {game.currentQuestion + 1}</h2>
 
             <p>{question.question}</p>
 
-            <p>A. {question.choices.A}</p>
-            <p>B. {question.choices.B}</p>
-            <p>C. {question.choices.C}</p>
-            <p>D. {question.choices.D}</p>
+           <button onClick={() => setSelectedAnswer("A")}>
+            A. {question.choices.A}
+           </button>
+           <button onClick={() => setSelectedAnswer("B")}>
+            B. {question.choices.B}
+           </button>
+           <button onClick={() => setSelectedAnswer("C")}>
+            C. {question.choices.C}
+           </button>
+           <button onClick={() => setSelectedAnswer("D")}>
+            D. {question.choices.D}
+           </button>
+
+           <p>Selected Answer: {selectedAnswer}</p>
+
+           <button onClick={handleSubmitAnswer}>
+                Submit Answer
+           </button>
+
+           {result && <h3>{result}</h3>}
         </div>
     );
 }

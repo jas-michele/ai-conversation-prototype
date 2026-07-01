@@ -6,7 +6,7 @@ export interface Question {
         C: string;
         D: string;
     };
-    correctAnser: string
+    correctAnswer: string
 }
 
 export interface GameSession {
