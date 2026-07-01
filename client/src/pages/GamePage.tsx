@@ -27,11 +27,11 @@ function GamePage() {
 
     if (!game) {
         return (
-            <div>
-                <h1>Who Wants To Be a Millionare</h1>
-                <h2>Developer Edition</h2>
+            <div className="game-container">
+                <h1 className="title">Who Wants To Be a Millionaire</h1>
+                <h2 className="subtitle">Developer Edition</h2>
 
-                <button onClick={handleStartGame} disabled={loading}>
+                <button className="start-btn" onClick={handleStartGame} disabled={loading}>
                     {loading ? "Starting..." : "Start Game"}
                 </button>
 
@@ -52,13 +52,18 @@ function GamePage() {
     const question = game.questions[currentQuestion];
 
     const handleSubmitAnswer = () => {
+        const correctLetter = question.correctAnswer;
+
+        const correctText = 
+            question.choices[correctLetter as keyof typeof question.choices];
+
         if (!selectedAnswer) return;
 
         if (selectedAnswer === question.correctAnswer) {
             setScore((prev) => prev + 1);
             setResult("✅ Correct");
         } else {
-            setResult("❌ Incorrect");
+            setResult(`❌ Incorrect!\n\nThe correct answer was ${correctLetter}. ${correctText}`);
         }
     }
 
@@ -70,12 +75,13 @@ function GamePage() {
 
     return (
         <div>
-            <h3>Score: {score}</h3>
+            <h3 className="score">Score: {score}</h3>
 
-            <h2> Question {game.currentQuestion + 1}</h2>
+            <h2 className="question"> Question {game.currentQuestion + 1}</h2>
 
-            <p>{question.question}</p>
+            <p className="question">{question.question}</p>
 
+           <div className="answers">
            <button onClick={() => setSelectedAnswer("A")}>
             A. {question.choices.A}
            </button>
@@ -88,10 +94,12 @@ function GamePage() {
            <button onClick={() => setSelectedAnswer("D")}>
             D. {question.choices.D}
            </button>
+           </div>
 
            <p>Selected Answer: {selectedAnswer}</p>
 
            <button 
+            className="submit-btn"
               onClick={handleSubmitAnswer}
               disabled={!selectedAnswer || !!result}
            >
@@ -100,9 +108,9 @@ function GamePage() {
 
            {result && ( 
             <>
-            <h3>{result}</h3>
+            <h3 className="result">{result}</h3>
 
-            <button onClick={handleNextQuestion}>
+            <button className="next-btn" onClick={handleNextQuestion}>
                 Next Question
             </button>
             </>
