@@ -29,10 +29,10 @@ export const startNewGame = async () => {
     const rawText = response.output_text;
 
     const cleanJson = rawText
-        .replace(/```json/g, ""
+        .replace(/```json/g, "")
         .replace(/```/g, "")
         .trim()  
-        )
+        
 
     const startIndex = cleanJson.indexOf("[");
     const endIndex = cleanJson.lastIndexOf("]");
