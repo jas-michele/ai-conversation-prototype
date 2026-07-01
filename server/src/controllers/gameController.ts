@@ -1,11 +1,20 @@
 import { Request, Response } from "express";
 import { startNewGame } from "../services/gameServices";
 
-export const startGame = (
+export const startGame = async (
     req: Request,
     res: Response
-): void => {
-    const game = startNewGame();
+): Promise<void> => {
+    try {
+     const game = await startNewGame();
 
-    res.status(200).json(game);
+     res.status(200).json(game);
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to start game."
+        })
+    }
 };
