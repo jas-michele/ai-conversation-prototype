@@ -161,7 +161,7 @@ function GamePage() {
 
             <button
                 className="submit-btn"
-                onClick={handleSubmitAnswer}
+                onClick={() => handleSubmitAnswer}
                 disabled={!selectedAnswer || !!result}
             >
                 Submit Answer
