@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { startGame } from "../services/gameService";
 import type { GameSession } from "../types/game";
 import { generateSpeech } from "../services/speechService";
+import speechRecognitionService from "../services/speechRecogntitionService";
 
 function GamePage() {
     const [game, setGame] = useState<GameSession | null>(null);
@@ -11,6 +12,8 @@ function GamePage() {
     const [result, setResult] = useState("");
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [score, setScore] = useState(0);
+
+    const [transcript, setTranscript] = useState("");
 
     useEffect(() => {
         if (!game) return;
@@ -86,7 +89,7 @@ function GamePage() {
     const handleSubmitAnswer = () => {
         const correctLetter = question.correctAnswer;
 
-        const correctText = 
+        const correctText =
             question.choices[correctLetter as keyof typeof question.choices];
 
         if (!selectedAnswer) return;
@@ -105,6 +108,18 @@ function GamePage() {
         setResult("");
     }
 
+    const handleListen = async () => {
+        try {
+            const result = await speechRecognitionService.startListening();
+
+            console.log(result);
+
+            setTranscript(result);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     return (
         <div>
             <h3 className="score">Score: {score}</h3>
@@ -113,40 +128,46 @@ function GamePage() {
 
             <p className="question">{question.question}</p>
 
-           <div className="answers">
-           <button onClick={() => setSelectedAnswer("A")}>
-            A. {question.choices.A}
-           </button>
-           <button onClick={() => setSelectedAnswer("B")}>
-            B. {question.choices.B}
-           </button>
-           <button onClick={() => setSelectedAnswer("C")}>
-            C. {question.choices.C}
-           </button>
-           <button onClick={() => setSelectedAnswer("D")}>
-            D. {question.choices.D}
-           </button>
-           </div>
+            <div className="answers">
+                <button onClick={handleListen}>
+                    🎤 Listen
+                </button>
 
-           <p>Selected Answer: {selectedAnswer}</p>
+                <p>Transcript: {transcript}</p>
 
-           <button 
-            className="submit-btn"
-              onClick={handleSubmitAnswer}
-              disabled={!selectedAnswer || !!result}
-           >
+                <button onClick={() => setSelectedAnswer("A")}>
+                    A. {question.choices.A}
+                </button>
+                <button onClick={() => setSelectedAnswer("B")}>
+                    B. {question.choices.B}
+                </button>
+                <button onClick={() => setSelectedAnswer("C")}>
+                    C. {question.choices.C}
+                </button>
+                <button onClick={() => setSelectedAnswer("D")}>
+                    D. {question.choices.D}
+                </button>
+            </div>
+
+            <p>Selected Answer: {selectedAnswer}</p>
+
+            <button
+                className="submit-btn"
+                onClick={handleSubmitAnswer}
+                disabled={!selectedAnswer || !!result}
+            >
                 Submit Answer
-           </button>
-
-           {result && ( 
-            <>
-            <h3 className="result">{result}</h3>
-
-            <button className="next-btn" onClick={handleNextQuestion}>
-                Next Question
             </button>
-            </>
-           )}
+
+            {result && (
+                <>
+                    <h3 className="result">{result}</h3>
+
+                    <button className="next-btn" onClick={handleNextQuestion}>
+                        Next Question
+                    </button>
+                </>
+            )}
         </div>
     );
 }
