@@ -86,15 +86,17 @@ function GamePage() {
 
     const question = game.questions[currentQuestion];
 
-    const handleSubmitAnswer = () => {
+    const handleSubmitAnswer = (answerOverride?: string) => {
+        const answerToCheck = answerOverride || selectedAnswer;
+
         const correctLetter = question.correctAnswer;
 
         const correctText =
             question.choices[correctLetter as keyof typeof question.choices];
 
-        if (!selectedAnswer) return;
+        if (!answerToCheck) return;
 
-        if (selectedAnswer === question.correctAnswer) {
+        if (answerToCheck === question.correctAnswer) {
             setScore((prev) => prev + 1);
             setResult("✅ Correct");
         } else {
@@ -112,9 +114,15 @@ function GamePage() {
         try {
             const result = await speechRecognitionService.startListening();
 
+            const answer = result.trim().toUpperCase();
             console.log(result);
 
-            setTranscript(result);
+            setTranscript(answer);
+
+            if (["A", "B", "C", "D"].includes(answer)) {
+                setSelectedAnswer(answer);
+                handleSubmitAnswer(answer);
+            }
         } catch (error) {
             console.error(error);
         }
