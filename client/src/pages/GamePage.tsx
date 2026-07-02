@@ -1,6 +1,7 @@
-import { use, useState } from "react";
+import { useEffect, useState } from "react";
 import { startGame } from "../services/gameService";
 import type { GameSession } from "../types/game";
+import { generateSpeech } from "../services/speechService";
 
 function GamePage() {
     const [game, setGame] = useState<GameSession | null>(null);
@@ -10,6 +11,37 @@ function GamePage() {
     const [result, setResult] = useState("");
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [score, setScore] = useState(0);
+
+    useEffect(() => {
+        if (!game) return;
+
+        const speakQuestion = async () => {
+            const question = game.questions[currentQuestion];
+
+            const text = `
+               Question ${currentQuestion + 1}.
+
+               ${question.question}
+
+               A. ${question.choices.A}
+               B. ${question.choices.B}
+               C. ${question.choices.C}
+               D. ${question.choices.D}
+            `;
+
+            try {
+                const audioUrl = await generateSpeech(text);
+
+                const audio = new Audio(audioUrl);
+
+                await audio.play();
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        speakQuestion();
+    }, [game, currentQuestion]);
 
     const handleStartGame = async () => {
         try {

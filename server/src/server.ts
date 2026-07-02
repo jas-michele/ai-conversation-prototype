@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 
 import gameRoutes from "./routes/gameRoutes";
+import speechRoutes from "./routes/speechRoutes";
 
 dotenv.config();
 
@@ -13,6 +14,8 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/game", gameRoutes);
+
+app.use("/api/game", speechRoutes);
 
 app.get("/", (req, res) => {
     res.json({
